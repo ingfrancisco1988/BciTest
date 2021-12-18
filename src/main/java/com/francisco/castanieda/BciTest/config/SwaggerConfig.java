@@ -12,9 +12,10 @@ import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.util.*;
 
 import static springfox.documentation.builders.PathSelectors.regex;
 
@@ -52,11 +53,11 @@ public class SwaggerConfig {
                 .genericModelSubstitutes(ResponseEntity.class)
                 .ignoredParameterTypes(Pageable.class)
                 .ignoredParameterTypes(java.sql.Date.class)
-                .directModelSubstitute(java.time.LocalDate.class, java.sql.Date.class)
-                .directModelSubstitute(java.time.ZonedDateTime.class, Date.class)
-                .directModelSubstitute(java.time.LocalDateTime.class, Date.class)
-                .securityContexts((List<SecurityContext>) securityContext())
-                .securitySchemes((List<SecurityScheme>) apiKey())
+                .directModelSubstitute(LocalDate.class, java.sql.Date.class)
+                .directModelSubstitute(ZonedDateTime.class, Date.class)
+                .directModelSubstitute(LocalDateTime.class, Date.class)
+                .securityContexts(Arrays.asList(securityContext()))
+                .securitySchemes(Arrays.asList(apiKey()))
                 .useDefaultResponseMessages(false);
 
         docket = docket.select()
@@ -82,7 +83,7 @@ public class SwaggerConfig {
                 = new AuthorizationScope("global", "accessEverything");
         AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
         authorizationScopes[0] = authorizationScope;
-        return (List<SecurityReference>)
-                new SecurityReference("JWT", authorizationScopes);
+        return Arrays.asList(
+                new SecurityReference("JWT", authorizationScopes));
     }
 }
