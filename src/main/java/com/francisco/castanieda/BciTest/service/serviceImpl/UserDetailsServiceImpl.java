@@ -1,35 +1,38 @@
 package com.francisco.castanieda.BciTest.service.serviceImpl;
 
-import com.francisco.castanieda.BciTest.model.Entity.User;
+import com.francisco.castanieda.BciTest.exceptions.ValidationsException;
+import com.francisco.castanieda.BciTest.model.entity.User;
 import com.francisco.castanieda.BciTest.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-
-import static java.util.Collections.emptyList;
-
 @Service
+@RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    @Autowired
-    private UserRepository userRepository;
+
+    private final UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-         User user = userRepository.findUserByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
+        final User user = userRepository.findUserByEmail(email) ;
 
-        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), user.getIsAdmin() ?
-                Collections.singletonList(new GrantedAuthority() {
-                    @Override
-                    public String getAuthority() {
-                        return "ADMIN";
-                    }
-                }) : emptyList());
+        if (user == null) {
+            throw new UsernameNotFoundException("User '" + email + "' not found");
+        }
+
+        return org.springframework.security.core.userdetails.User
+                .withUsername(email)
+                .password(user.getPassword())
+                .authorities("ADMIN")
+                .accountExpired(false)
+                .accountLocked(false)
+                .credentialsExpired(false)
+                .disabled(false)
+                .build();
     }
 
 }

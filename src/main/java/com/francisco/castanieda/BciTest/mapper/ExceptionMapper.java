@@ -1,7 +1,7 @@
 package com.francisco.castanieda.BciTest.mapper;
 
 import com.francisco.castanieda.BciTest.exceptions.CustomException;
-import com.francisco.castanieda.BciTest.model.DTO.ErrorInfoDTO;
+import com.francisco.castanieda.BciTest.model.dto.ErrorInfoDTO;
 import ma.glasnost.orika.MapperFactory;
 import net.rakugakibox.spring.boot.orika.OrikaMapperFactoryConfigurer;
 import org.springframework.stereotype.Component;

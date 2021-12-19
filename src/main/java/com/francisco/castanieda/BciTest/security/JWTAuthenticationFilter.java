@@ -19,11 +19,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Optional;
 
-import static com.francisco.castanieda.BciTest.security.SecurityConstants.HEADER_STRING;
-import static com.francisco.castanieda.BciTest.security.SecurityConstants.TOKEN_PREFIX;
+import static com.francisco.castanieda.BciTest.model.constants.CustomConstants.SEED_ENCRYPTION;
+import static com.francisco.castanieda.BciTest.utils.JasyptUtil.decyptPwd;
 
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private AuthenticationManager authenticationManager;
@@ -44,13 +42,13 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 userRepository = webApplicationContext.getBean(UserRepository.class);
             }
 
-            com.francisco.castanieda.BciTest.model.Entity.User user = new ObjectMapper()
-                    .readValue(req.getInputStream(), com.francisco.castanieda.BciTest.model.Entity.User.class);
+            com.francisco.castanieda.BciTest.model.entity.User user = new ObjectMapper()
+                    .readValue(req.getInputStream(), com.francisco.castanieda.BciTest.model.entity.User.class);
 
             return authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             user.getEmail(),
-                            user.getPassword(),
+                           user.getPassword(),
                             new ArrayList<>())
             );
         } catch (IOException e) {
@@ -64,19 +62,19 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             FilterChain chain,
                                             Authentication auth) throws IOException, ServletException {
 
-        String token = JWTRepository.getInstance().create(((User) auth.getPrincipal()).getUsername(), !((User) auth.getPrincipal()).getAuthorities().isEmpty());
+        String token = JWTRepository.getInstance().create(((User) auth.getPrincipal()).getUsername());
 
         JWTRepository.getInstance().addToken(token);
 
-        Optional<com.francisco.castanieda.BciTest.model.Entity.User> user = userRepository
+        com.francisco.castanieda.BciTest.model.entity.User  user = userRepository
                 .findUserByEmail(((User) auth.getPrincipal()).getUsername());
 
-        if (user.isPresent()) {
-            user.get().setLastLogin(new Timestamp(System.currentTimeMillis()));
-            user.get().setToken(JWTRepository.getInstance().create(user.get().getEmail(),user.get().getIsAdmin()));
-            userRepository.save(user.get());
+        if (user!=null) {
+            user.setLastLogin(new Timestamp(System.currentTimeMillis()));
+            user.setToken(JWTRepository.getInstance().create(user.getEmail()));
+            userRepository.save(user );
         }
 
-        res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
+        res.addHeader(SecurityConstants.HEADER_STRING, SecurityConstants.TOKEN_PREFIX + token);
     }
 }

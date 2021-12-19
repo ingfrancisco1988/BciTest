@@ -1,6 +1,6 @@
-package com.francisco.castanieda.BciTest.model.DTO;
+package com.francisco.castanieda.BciTest.model.dto;
 
-import com.francisco.castanieda.BciTest.model.Entity.Phone;
+import com.francisco.castanieda.BciTest.model.entity.Phone;
 import lombok.Data;
 
 import java.util.List;

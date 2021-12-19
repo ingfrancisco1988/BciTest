@@ -1,4 +1,4 @@
-package com.francisco.castanieda.BciTest.model.Entity;
+package com.francisco.castanieda.BciTest.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
@@ -6,9 +6,10 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+
+import static com.francisco.castanieda.BciTest.model.constants.CustomConstants.SEED_ENCRYPTION;
+import static com.francisco.castanieda.BciTest.utils.JasyptUtil.encyptPwd;
 
 @Data
 @Entity
@@ -39,5 +40,7 @@ public class User {
         this.password = null;
         this.isAdmin = null;
     }
+
+
 
 }

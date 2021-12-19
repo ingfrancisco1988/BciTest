@@ -1,4 +1,4 @@
-package com.francisco.castanieda.BciTest.model.DTO;
+package com.francisco.castanieda.BciTest.model.dto;
 
 import lombok.Data;
 

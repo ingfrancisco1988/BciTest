@@ -1,7 +1,13 @@
 package com.francisco.castanieda.BciTest.security;
 
-import com.auth0.jwt.JWT;
+
+import com.francisco.castanieda.BciTest.exceptions.ValidationsException;
+import com.francisco.castanieda.BciTest.repository.UserRepository;
 import com.francisco.castanieda.BciTest.service.serviceImpl.UserDetailsServiceImpl;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -9,13 +15,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
-import static com.francisco.castanieda.BciTest.security.SecurityConstants.EXPIRATION_TIME;
-import static com.francisco.castanieda.BciTest.security.SecurityConstants.SECRET;
 
 @Component
 public class JWTRepository {
@@ -40,30 +43,45 @@ public class JWTRepository {
         this.tokens.remove(token);
     }
 
-    public boolean hasToken(String token) {
-        return this.tokens.contains(token);
-    }
+    public String create(String username ) {
 
+        Claims claims = Jwts.claims().setSubject(username);
+        claims.put("auth", "ADMIN");
 
-    public String create(String username, boolean isAdmin) {
-        String token = JWT.create()
-                .withSubject(username)
-                .withClaim("admin", isAdmin)
-                .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .sign(HMAC512(SECRET.getBytes()));
-        addToken(token);
-        return token;
-    }
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + SecurityConstants.EXPIRATION_TIME);
 
-    public String decode(String token) {
-        return JWT.require(HMAC512(SECRET.getBytes()))
-                .build()
-                .verify(token)
-                .getSubject();
+        return Jwts.builder()//
+                .setClaims(claims)//
+                .setIssuedAt(now)//
+                .setExpiration(validity)//
+                .signWith(SignatureAlgorithm.HS256, SecurityConstants.SECRET)//
+                .compact();
     }
 
     public Authentication getAuthentication(String token) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(decode(token));
+        UserDetails userDetails = userDetailsService.loadUserByUsername(getUsername(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    }
+
+    public String getUsername(String token) {
+        return Jwts.parser().setSigningKey(SecurityConstants.SECRET).parseClaimsJws(token).getBody().getSubject();
+    }
+
+    public String resolveToken(HttpServletRequest req) {
+        String bearerToken = req.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parser().setSigningKey(SecurityConstants.SECRET).parseClaimsJws(token);
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new ValidationsException("Expired or invalid JWT token", "Error",HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

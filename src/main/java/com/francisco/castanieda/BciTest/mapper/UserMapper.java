@@ -2,9 +2,8 @@ package com.francisco.castanieda.BciTest.mapper;
 
 
 
-import com.francisco.castanieda.BciTest.model.DTO.ResponseUserDTO;
-import com.francisco.castanieda.BciTest.model.DTO.UserDTO;
-import com.francisco.castanieda.BciTest.model.Entity.User;
+import com.francisco.castanieda.BciTest.model.dto.ResponseUserDTO;
+import com.francisco.castanieda.BciTest.model.entity.User;
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MapperFactory;
 import net.rakugakibox.spring.boot.orika.OrikaMapperFactoryConfigurer;
@@ -19,7 +18,8 @@ public class UserMapper implements OrikaMapperFactoryConfigurer {
         orikaMapperFactory.classMap(User.class, ResponseUserDTO.class)
 
                 .field("id","id")
-                .field("name","password")
+                .field("name","name")
+                .field("password","password")
                 .field("email","email")
                 .field("token","token")
                 .field("isActive","isActive")

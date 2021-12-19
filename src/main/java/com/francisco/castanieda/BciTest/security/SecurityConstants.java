@@ -6,5 +6,5 @@ public abstract class SecurityConstants {
     public static final String TOKEN_PREFIX = "Bearer ";
     public static final String HEADER_STRING = "Authorization";
     public static final String SIGN_UP_URL = "/api/users/sign-up";
-    public static final String[] SWAGGER_WHITELIST = { "/swagger-resources/**", "/swagger-ui.html", "/v2/api-docs", "/webjars/**" };
+    public static final String[] WHITE_LIST = { "/webjars/**","/h2console/**/**" };
 }

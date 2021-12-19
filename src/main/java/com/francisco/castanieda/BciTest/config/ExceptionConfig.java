@@ -3,7 +3,7 @@ package com.francisco.castanieda.BciTest.config;
 import com.francisco.castanieda.BciTest.exceptions.CustomException;
 import com.francisco.castanieda.BciTest.exceptions.ValidationsException;
 import com.francisco.castanieda.BciTest.exceptions.UserNotFoundException;
-import com.francisco.castanieda.BciTest.model.DTO.ErrorInfoDTO;
+import com.francisco.castanieda.BciTest.model.dto.ErrorInfoDTO;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
