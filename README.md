@@ -32,6 +32,9 @@ en el body ejemplo:
 }
 
 ```
+## Informacion Relevante 🛠️
+
+Los diagramas se Encuentran dentro de la carpeta resources/Diagram
 
 
 
